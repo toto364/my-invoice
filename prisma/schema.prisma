@@ -32,7 +32,7 @@ model Customer {
 model Invoice {
   id          String   @id @default(uuid())
   customer_id String
-  amount      Decimal  @db.Decimal(13, 2)
+  amount      Int
   status      String   @default("pending")
   date        DateTime @db.Date
   customer    Customer @relation(fields: [customer_id], references: [id])

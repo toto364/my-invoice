@@ -1,5 +1,4 @@
 import { sql } from '@vercel/postgres';
-import { PrismaClient } from '@prisma/client';
 import {
   CustomerField,
   CustomersTableType,
@@ -12,8 +11,7 @@ import {
 import { formatCurrency } from './utils';
 import { customers, invoices, revenue } from './placeholder-data';
 import { unstable_noStore as noStore } from 'next/cache';
-
-const prisma = new PrismaClient()
+import prisma from '@/app/lib/prisma';
 
 export async function fetchRevenue() {
   // Add noStore() here to prevent the response from being cached.
@@ -69,11 +67,17 @@ export async function fetchLatestInvoices() {
     //   JOIN customers ON invoices.customer_id = customers.id
     //   ORDER BY invoices.date DESC
     //   LIMIT 5`;
-    const data = await prisma.invoice.findMany({
-      include: { customer: true },
-      orderBy: [{ date: 'desc' }],
-      take: 5,
-    })
+    const data = await prisma.$queryRaw<LatestInvoiceRaw[]>`
+      SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
+      FROM invoices
+      JOIN customers ON invoices.customer_id = customers.id
+      ORDER BY invoices.date DESC
+      LIMIT 5`;
+    // const data = await prisma.invoice.findMany({
+    //   include: { customer: true },
+    //   orderBy: [{ date: 'desc' }],
+    //   take: 5,
+    // })
 
     // const latestInvoices = data.rows.map((invoice) => ({
     //   ...invoice,
@@ -120,7 +124,7 @@ export async function fetchCardData() {
     //      FROM invoices`;
     const invoiceCountPromise = prisma.invoice.count();
     const customerCountPromise = prisma.customer.count();
-    const invoiceStatusPromise = prisma.$queryRaw<[{ paid: number, pending: number }]>`SELECT
+    const invoiceStatusPromise = prisma.$queryRaw<{ paid: number, pending: number }[]>`SELECT
       SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
       SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
       FROM invoices`;
@@ -136,8 +140,8 @@ export async function fetchCardData() {
     // const totalPendingInvoices = formatCurrency(data[2].rows[0].pending ?? '0');
     const numberOfInvoices = Number(data[0] ?? '0');
     const numberOfCustomers = Number(data[1] ?? '0');
-    const totalPaidInvoices = formatCurrency(data[2][0].paid ?? '0');
-    const totalPendingInvoices = formatCurrency(data[2][0].pending ?? '0');
+    const totalPaidInvoices = formatCurrency(Number(data[2][0].paid ?? '0'));
+    const totalPendingInvoices = formatCurrency(Number(data[2][0].pending ?? '0'));
 
     return {
       numberOfCustomers,
@@ -313,22 +317,22 @@ export async function fetchFilteredCustomers(query: string) {
 
   try {
     // const data = await sql<CustomersTableType>`
-		// SELECT
-		//   customers.id,
-		//   customers.name,
-		//   customers.email,
-		//   customers.image_url,
-		//   COUNT(invoices.id) AS total_invoices,
-		//   SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
-		//   SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
-		// FROM customers
-		// LEFT JOIN invoices ON customers.id = invoices.customer_id
-		// WHERE
-		//   customers.name ILIKE ${`%${query}%`} OR
+    // SELECT
+    //   customers.id,
+    //   customers.name,
+    //   customers.email,
+    //   customers.image_url,
+    //   COUNT(invoices.id) AS total_invoices,
+    //   SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
+    //   SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
+    // FROM customers
+    // LEFT JOIN invoices ON customers.id = invoices.customer_id
+    // WHERE
+    //   customers.name ILIKE ${`%${query}%`} OR
     //     customers.email ILIKE ${`%${query}%`}
-		// GROUP BY customers.id, customers.name, customers.email, customers.image_url
-		// ORDER BY customers.name ASC
-	  // `;
+    // GROUP BY customers.id, customers.name, customers.email, customers.image_url
+    // ORDER BY customers.name ASC
+    // `;
     const data = await prisma.$queryRaw<CustomersTableType[]>`
 		SELECT
 		  customers.id,
