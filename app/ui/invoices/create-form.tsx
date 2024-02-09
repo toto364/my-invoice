@@ -134,13 +134,13 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
           </div>
         </fieldset>
 
-        {state.message ?
+        {state.message ? (
           <div id="message-error" aria-live="polite" aria-atomic="true">
             <p className="mt-2 text-sm text-red-500" key="message-error">
               {state.message}
             </p>
           </div>
-          : null}
+        ) : null}
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link

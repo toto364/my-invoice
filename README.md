@@ -17,5 +17,5 @@ npx prisma db push
 npm run seed:prisma # dev only
 
 openssl rand -base64 32
-# use the output from the above command in .env 
+# use the output from the above command in .env
 ```

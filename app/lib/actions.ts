@@ -1,11 +1,11 @@
 'use server';
 
-import { z } from "zod";
-import { PrismaClient } from "@prisma/client";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { signIn } from "@/auth";
-import { AuthError } from "next-auth";
+import { z } from 'zod';
+import { PrismaClient } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 
 const prisma = new PrismaClient();
 
@@ -64,7 +64,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
         amount: amountInCents,
         status,
         date,
-      }
+      },
     });
   } catch (error) {
     // If a database error occurs, return a more specific error.
@@ -83,7 +83,7 @@ const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 export async function updateInvoice(
   id: string,
   prevState: State,
-  formData: FormData
+  formData: FormData,
 ) {
   const validatedFields = UpdateInvoice.safeParse({
     customerId: formData.get('customerId'),
@@ -98,7 +98,7 @@ export async function updateInvoice(
     };
   }
 
-  const { customerId, amount, status } = validatedFields.data
+  const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
 
   try {

@@ -124,7 +124,9 @@ export async function fetchCardData() {
     //      FROM invoices`;
     const invoiceCountPromise = prisma.invoice.count();
     const customerCountPromise = prisma.customer.count();
-    const invoiceStatusPromise = prisma.$queryRaw<{ paid: number, pending: number }[]>`SELECT
+    const invoiceStatusPromise = prisma.$queryRaw<
+      { paid: number; pending: number }[]
+    >`SELECT
       SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
       SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
       FROM invoices`;
@@ -141,7 +143,9 @@ export async function fetchCardData() {
     const numberOfInvoices = Number(data[0] ?? '0');
     const numberOfCustomers = Number(data[1] ?? '0');
     const totalPaidInvoices = formatCurrency(Number(data[2][0].paid ?? '0'));
-    const totalPendingInvoices = formatCurrency(Number(data[2][0].pending ?? '0'));
+    const totalPendingInvoices = formatCurrency(
+      Number(data[2][0].pending ?? '0'),
+    );
 
     return {
       numberOfCustomers,
@@ -370,7 +374,9 @@ export async function getUser(email: string) {
 
   try {
     // const user = await sql`SELECT * FROM users WHERE email=${email}`;
-    const user = await prisma.$queryRaw<User[]>`SELECT * FROM users WHERE email=${email}`;
+    const user = await prisma.$queryRaw<
+      User[]
+    >`SELECT * FROM users WHERE email=${email}`;
     // return user.rows[0] as User;
     return user[0];
   } catch (error) {
