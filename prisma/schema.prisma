@@ -20,22 +20,29 @@ model User {
 }
 
 model Customer {
-  id        String    @id @default(uuid())
-  name      String    @db.Text
-  email     String    @db.Text
-  image_url String    @db.Text
-  Invoice   Invoice[]
+  id           String    @id @default(uuid())
+  name         String    @db.Text
+  email        String    @db.Text
+  phone_number String?
+  address      String?   @db.Text
+  image_url    String    @db.Text
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  Invoice      Invoice[]
 
   @@map("customers")
 }
 
 model Invoice {
-  id          String   @id @default(uuid())
-  customer_id String
-  amount      Int
-  status      String   @default("pending")
-  date        DateTime @db.Date
-  customer    Customer @relation(fields: [customer_id], references: [id])
+  id           String        @id @default(uuid())
+  customer     Customer?     @relation(fields: [customer_id], references: [id])
+  customer_id  String?
+  amount       Int
+  status       String        @default("pending")
+  date         DateTime      @db.Date
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  invoiceItems InvoiceItem[]
 
   @@map("invoices")
 }
@@ -46,4 +53,57 @@ model Revenue {
   revenue Int
 
   @@map("revenue")
+}
+
+model Product {
+  id           Int           @id @default(autoincrement())
+  name         String        @db.Text
+  description  String        @db.Text
+  invoiceItems InvoiceItem[]
+  ProductUnit  ProductUnit[]
+
+  @@map("products")
+}
+
+model Unit {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String        @db.Text
+  InvoiceItem InvoiceItem[]
+  ProductUnit ProductUnit[]
+
+  @@map("units")
+}
+
+model ProductUnit {
+  product    Product @relation(fields: [product_id], references: [id])
+  product_id Int
+  unit       Unit    @relation(fields: [unit_id], references: [id])
+  unit_id    Int
+  price      Int
+
+  @@id([product_id, unit_id])
+  @@index([product_id])
+  @@map("product_unit")
+}
+
+model InvoiceItem {
+  invoice      Invoice  @relation(fields: [invoice_id], references: [id])
+  invoice_id   String
+  product      Product  @relation(fields: [product_id], references: [id])
+  product_id   Int
+  unit         Unit     @relation(fields: [unit_id], references: [id])
+  unit_id      Int
+  product_name String   @db.Text
+  amount       Int
+  unit_name    String
+  price        Int
+  total_price  Int
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@id([invoice_id, product_id, unit_id])
+  @@index([product_id])
+  @@index([created_at])
+  @@map("invoice_items")
 }
