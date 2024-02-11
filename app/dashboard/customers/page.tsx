@@ -3,8 +3,11 @@ import Image from 'next/image';
 import { fetchCustomersPages, fetchFilteredCustomers } from '@/app/lib/data';
 import { CustomersTableType } from '@/app/lib/definitions';
 import ResourceIndex from '@/app/ui/pages/resource-index';
-import { formatFinancialNumber, formatNumber } from '@/app/lib/utils';
+import { formatCurrency, formatFinancialNumber, formatNumber } from '@/app/lib/utils';
 import { inconsolata } from '@/app/ui/fonts';
+import { ResourceRenderer } from '@/app/ui/pages/resource-renderer';
+import { ActionButton } from '@/app/ui/components/buttons';
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 export const metadata: Metadata = {
   title: 'Customers',
@@ -35,36 +38,51 @@ export default async function Page({
 
 function renderCustomersTable(customers: CustomersTableType[]) {
   return (
-    <table className="hidden min-w-full text-gray-900 md:table">
-      <thead className="rounded-lg text-left text-sm font-normal">
-        <tr>
-          <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-            Customer
-          </th>
-          <th scope="col" className="px-3 py-5 font-medium">
-            Email
-          </th>
-          <th scope="col" className="px-3 py-5 font-medium text-right">
-            # Invoices
-          </th>
-          <th scope="col" className="px-3 py-5 font-medium text-right">
-            ฿ Pending
-          </th>
-          <th scope="col" className="px-3 py-5 font-medium text-right">
-            ฿ Paid
-          </th>
-          {/* <th scope="col" className="relative py-3 pl-6 pr-3">
-            <span className="sr-only">Edit</span>
-          </th> */}
-        </tr>
-      </thead>
-      <tbody className="bg-white">
-        {customers?.map((customer) => (
-          <tr
-            key={customer.id}
-            className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
-          >
-            <td className="whitespace-nowrap py-3 pl-6 pr-3">
+    <ResourceRenderer
+      headers={[
+        { children: <>Customer</>, key: "header-customer" },
+        { children: <>Email</>, key: "header-email" },
+        { children: <># Invoices</>, className: "text-right", key: "header-invoices" },
+        { children: <>฿ Pending</>, className: "text-right", key: "header-pending" },
+        { children: <>฿ Paid</>, className: "text-right", key: "header-paid" },
+      ]}
+      resources={customers.map((customer) => ({
+        action: (<>
+          <ActionButton
+            icon={<PencilIcon className="w-5" />}
+          />
+          <ActionButton
+            icon={<TrashIcon className="w-5" />}
+          />
+        </>),
+        card: {
+          upperPanel: (<>
+            <div className="mb-2 flex items-center">
+              <Image
+                src={customer.image_url}
+                className="mr-2 rounded-full"
+                width={28}
+                height={28}
+                alt={`${customer.name}'s profile picture`}
+              />
+              <p>{customer.name}</p>
+            </div>
+            <p className="text-sm text-gray-500">{customer.email}</p>
+          </>),
+          lowerPanel: (<div>
+            <div className="flex w-1/2 flex-col">
+              <p className="text-xs">Pending</p>
+              <p className={`${inconsolata.className}`}>{formatCurrency(customer.total_pending)}</p>
+            </div>
+            <div className="flex w-1/2 flex-col">
+              <p className="text-xs">Paid</p>
+              <p className={`${inconsolata.className}`}>{formatCurrency(customer.total_paid)}</p>
+            </div>
+          </div>),
+        },
+        cols: [
+          {
+            children: (
               <div className="flex items-center gap-3">
                 <Image
                   src={customer.image_url}
@@ -75,28 +93,31 @@ function renderCustomersTable(customers: CustomersTableType[]) {
                 />
                 <p>{customer.name}</p>
               </div>
-            </td>
-            <td className="whitespace-nowrap px-3 py-3">
-              {customer.email}
-            </td>
-            <td className={`${inconsolata.className} whitespace-nowrap px-3 py-3 text-right`}>
-              {formatNumber(customer.total_invoices)}
-            </td>
-            <td className={`${inconsolata.className} whitespace-nowrap px-3 py-3 text-right`}>
-              {formatFinancialNumber(customer.total_pending)}
-            </td>
-            <td className={`${inconsolata.className} whitespace-nowrap px-3 py-3 text-right`}>
-              {formatFinancialNumber(customer.total_paid)}
-            </td>
-            {/* <td className="whitespace-nowrap py-3 pl-6 pr-3">
-              <div className="flex justify-end gap-3">
-                <UpdateInvoice id={invoice.id} />
-                <DeleteInvoice id={invoice.id} />
-              </div>
-            </td> */}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+            ),
+            key: `customer-${customer.id}-customer`,
+          },
+          {
+            children: <>{customer.email}</>,
+            key: `customer-${customer.id}-email`,
+          },
+          {
+            children: <>{formatNumber(customer.total_invoices)}</>,
+            className: `${inconsolata.className} text-right`,
+            key: `customer-${customer.id}-invoices`,
+          },
+          {
+            children: <>{formatFinancialNumber(customer.total_pending)}</>,
+            className: `${inconsolata.className} text-right`,
+            key: `customer-${customer.id}-pending`,
+          },
+          {
+            children: <>{formatFinancialNumber(customer.total_paid)}</>,
+            className: `${inconsolata.className} text-right`,
+            key: `customer-${customer.id}-paid`,
+          },
+        ],
+        key: `customer-${customer.id}`,
+      }))}
+    />
   );
 }

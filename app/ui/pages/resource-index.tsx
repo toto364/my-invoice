@@ -1,6 +1,6 @@
 import Pagination from '@/app/ui/invoices/pagination';
 import Search from '@/app/ui/search';
-import { PrimaryButton } from '@/app/ui/invoices/buttons';
+import { PrimaryButton } from '@/app/ui/components/buttons';
 import { bai_jamjuree } from '@/app/ui/fonts';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
@@ -11,14 +11,6 @@ export const metadata: Metadata = {
   title: 'Invoices',
 };
 
-// export type UseResourceIndexProps<T> = {
-//   query: string,
-//   page: string,
-//   fetchResourcesPages: (query: string) => Promise<number>,
-//   fetchFilteredResources: (query: string) => Promise<T[]>,
-// }
-
-// maybe adjust per resource type
 export type ResourceIndexProps<T> = {
   createButtonTitle?: string;
   createButtonUrl: string;
@@ -30,15 +22,6 @@ export type ResourceIndexProps<T> = {
   searchPlaceholder?: string;
   title?: string;
 }
-
-// export function useResourceIndex<T>(props: UseResourceIndexProps<T>) {
-//   return {
-//     query: props.query || '',
-//     currentPage: Number(props.page) || 1,
-//     totalPages: props.fetchResourcesPages(props.query),
-//     fetchFilteredResources: props.fetchFilteredResources,
-//   }
-// }
 
 export default async function ResourceIndex<T>(props: ResourceIndexProps<T>) {
   const query = props.query || '';
