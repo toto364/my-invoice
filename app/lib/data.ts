@@ -316,7 +316,10 @@ export async function fetchCustomers() {
   }
 }
 
-export async function fetchFilteredCustomers(query: string, currentPage: number) {
+export async function fetchFilteredCustomers(
+  query: string,
+  currentPage: number,
+) {
   noStore();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 

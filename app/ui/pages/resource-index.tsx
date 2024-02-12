@@ -1,27 +1,25 @@
+import { Suspense } from 'react';
 import Pagination from '@/app/ui/invoices/pagination';
 import Search from '@/app/ui/search';
 import { PrimaryButton } from '@/app/ui/components/buttons';
 import { bai_jamjuree } from '@/app/ui/fonts';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
-import { Suspense } from 'react';
-import { Metadata } from 'next';
 import { PlusIcon } from '@heroicons/react/24/outline';
-
-export const metadata: Metadata = {
-  title: 'Invoices',
-};
 
 export type ResourceIndexProps<T> = {
   createButtonTitle?: string;
   createButtonUrl: string;
-  fetchFilteredResources: (query: string, currentPage: number) => Promise<T[]>,
-  fetchResourcesPages: (query: string) => Promise<number>,
-  page?: string;
-  query?: string;
+  fetchFilteredResources: (query: string, currentPage: number) => Promise<T[]>;
+  fetchResourcesPages: (query: string) => Promise<number>;
   renderResources: (resources: T[]) => JSX.Element;
   searchPlaceholder?: string;
   title?: string;
-}
+} & ResourceIndexSearchParamsType;
+
+export type ResourceIndexSearchParamsType = {
+  page?: string;
+  query?: string;
+};
 
 export default async function ResourceIndex<T>(props: ResourceIndexProps<T>) {
   const query = props.query || '';
@@ -38,12 +36,12 @@ export default async function ResourceIndex<T>(props: ResourceIndexProps<T>) {
         <Search placeholder={props.searchPlaceholder || 'Search ...'} />
         <PrimaryButton
           icon={<PlusIcon className="h-5 md:ml-4" />}
-          title={props.createButtonTitle}
+          title={props.createButtonTitle || 'Create'}
           url={props.createButtonUrl}
         />
       </div>
       <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
-        <ResourcesTable<T>
+        <ResourcesRenderer<T>
           query={query}
           currentPage={currentPage}
           fetchFilteredResources={props.fetchFilteredResources}
@@ -57,14 +55,14 @@ export default async function ResourceIndex<T>(props: ResourceIndexProps<T>) {
   );
 }
 
-export async function ResourcesTable<T>({
+export async function ResourcesRenderer<T>({
   currentPage,
   fetchFilteredResources,
   query,
   renderResources,
 }: {
   currentPage: number;
-  fetchFilteredResources: (query: string, currentPage: number) => Promise<T[]>,
+  fetchFilteredResources: (query: string, currentPage: number) => Promise<T[]>;
   query: string;
   renderResources: (resources: T[]) => JSX.Element;
 }) {
@@ -74,6 +72,11 @@ export async function ResourcesTable<T>({
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
+          {/* <ResourceRendererContainer<T>
+            renderResources={renderResources}
+            resources={resources}
+          /> */}
+          {/* <Renderer resources={resources} /> */}
           {renderResources(resources)}
           {/* <div className="md:hidden">
             {invoices.map((invoice) => (

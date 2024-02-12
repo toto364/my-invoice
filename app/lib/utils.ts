@@ -28,13 +28,13 @@ export const formatDateToLocal = (
 
 export const formatNumber = (amount: number) => {
   return amount.toLocaleString('th-TH');
-}
+};
 
 export const formatFinancialNumber = (amount: number) => {
   return amount.toLocaleString('th-TH', {
-    minimumFractionDigits: 2
+    minimumFractionDigits: 2,
   });
-}
+};
 
 export const generateYAxis = (revenue: Revenue[]) => {
   // Calculate what labels we need to display on the y-axis
