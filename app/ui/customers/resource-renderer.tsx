@@ -22,10 +22,8 @@ export type DeleteModalSearchParamsType = {
 
 export default function renderCustomers(
   customers: CustomersTableType[],
-  // modalSearchParams?: DeleteModalSearchParamsType,
 ) {
   const createDeleteUrl = (customer: CustomersTableType): string => {
-    // const params = new URLSearchParams(modalSearchParams);
     const params = new URLSearchParams();
     params.set('openDeleteModal', true.toString());
     params.set('customerEmail', customer.email);
@@ -56,12 +54,7 @@ export default function renderCustomers(
           key: `customer-${customer.id}`,
         }))}
       />
-      <DeleteModal
-        // open={modalSearchParams?.openDeleteModal == 'true' || false}
-        // customerEmail={modalSearchParams?.customerEmail}
-        // customerName={modalSearchParams?.customerName}
-        // customerImageUrl={modalSearchParams?.customerImageUrl}
-      />
+      <DeleteModal />
     </>
   );
 }

@@ -5,7 +5,9 @@ import { TrashIcon } from '@heroicons/react/24/outline';
 import { PrimaryButton } from '@/app/ui/components/buttons';
 import Modal from '@/app/ui/components/modal';
 
-export const useResourceDeleteModal = () => {
+export const useResourceDeleteModal = (configs: {
+  resourceSearchParamKeys: string[];
+}) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -14,14 +16,17 @@ export const useResourceDeleteModal = () => {
     const params = new URLSearchParams(searchParams);
     params.delete('openDeleteModal');
     setTimeout(() => {
-      // clean-up
-      // replace(`${pathname}?${params.toString()}`);
+      configs.resourceSearchParamKeys.forEach(key => {
+        params.delete(key);
+      });
+      replace(`${pathname}?${params.toString()}`);
     }, 200);
     replace(`${pathname}?${params.toString()}`);
   };
 
   return {
-    closeModal
+    closeModal,
+    open: searchParams.get('openDeleteModal') == 'true',
   }
 }
 

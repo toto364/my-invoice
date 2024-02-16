@@ -4,7 +4,7 @@ import { CustomersTableType } from '@/app/lib/definitions';
 import ResourceIndex, {
   ResourceIndexSearchParamsType,
 } from '@/app/ui/pages/resource-index';
-import renderCustomers, {
+import renderResources, {
   DeleteModalSearchParamsType,
 } from '@/app/ui/customers/resource-renderer';
 
@@ -25,7 +25,8 @@ export default async function Page({
       fetchResourcesPages={fetchCustomersPages}
       page={searchParams?.page}
       query={searchParams?.query}
-      renderResources={(customers) => renderCustomers(customers, searchParams)}
+      // renderResources={(customers) => renderResources(customers, searchParams)}
+      renderResources={renderResources}
       searchPlaceholder="Search customers..."
       title="Customers"
     />
