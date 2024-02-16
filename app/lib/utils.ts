@@ -31,7 +31,7 @@ export const formatNumber = (amount: number) => {
 };
 
 export const formatFinancialNumber = (amount: number) => {
-  return amount.toLocaleString('th-TH', {
+  return (amount / 100).toLocaleString('th-TH', {
     minimumFractionDigits: 2,
   });
 };
@@ -82,3 +82,7 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     totalPages,
   ];
 };
+
+export const snakeToCamel = (text: string): string => {
+  return text.toLowerCase().replace(/([-_][a-z])/g, group => group.toUpperCase().replace('-', '').replace('_', ''));
+}

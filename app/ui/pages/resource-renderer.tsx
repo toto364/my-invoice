@@ -3,28 +3,36 @@
 import clsx from 'clsx';
 import { Key } from 'react';
 
-export type ResourceRendererProps<T> = {
-  headers?: {
-    children: JSX.Element;
-    className?: string;
-    key?: Key;
-  }[];
+export type TableHeader = {
+  children: JSX.Element;
+  className?: string;
+  key?: Key;
+};
+
+export type CardProps = {
+  upperPanel?: JSX.Element;
+  lowerPanel?: JSX.Element;
+};
+
+export type TableDataProps = {
+  children: JSX.Element;
+  className?: string;
+  key?: Key;
+};
+
+export type ResourceRendererProps = {
+  tableHeaders?: TableHeader[];
+  // cardMapper
+  // tableRowMapper
   resources: {
     action?: JSX.Element;
-    card?: {
-      upperPanel?: JSX.Element;
-      lowerPanel?: JSX.Element;
-    };
-    cols?: {
-      children: JSX.Element;
-      className?: string;
-      key?: Key;
-    }[];
+    card?: CardProps;
+    cols?: TableDataProps[];
     key?: Key;
   }[];
 };
 
-export default function ResourceRenderer<T>(props: ResourceRendererProps<T>) {
+export default function ResourceRenderer(props: ResourceRendererProps) {
   const hasAction = props.resources.some((row) => !!row.action);
   const hasCardView = !props.resources.some((row) => !row.card);
   const hasTableView = !props.resources.some((row) => !row.cols);
@@ -55,17 +63,17 @@ export default function ResourceRenderer<T>(props: ResourceRendererProps<T>) {
             hasCardView ? 'hidden md:table' : 'table',
           )}
         >
-          {props.headers ? (
+          {props.tableHeaders ? (
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
-                {props.headers.map((header, idx) => (
+                {props.tableHeaders.map((header, idx) => (
                   <th
                     key={`${idx}`}
                     scope="col"
                     className={clsx(
                       idx > 1
-                        ? 'px-3 py-5 font-medium'
-                        : 'px-4 py-5 font-medium sm:pl-6',
+                        ? 'px-3 pb-5 pt-4 font-medium'
+                        : 'px-4 pb-5 pt-4 font-medium sm:pl-6',
                       header.className,
                     )}
                   >
@@ -111,12 +119,3 @@ export default function ResourceRenderer<T>(props: ResourceRendererProps<T>) {
     </>
   );
 }
-
-// type ResourceRendererContainerProps<T> = {
-//   renderResources: (resources: T[]) => JSX.Element;
-//   resources: T[];
-// }
-
-// export function ResourceRendererContainer<T>(props: ResourceRendererContainerProps<T>) {
-//   return props.renderResources(props.resources);
-// }

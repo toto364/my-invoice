@@ -25,7 +25,7 @@ model Customer {
   email        String    @db.Text
   phone_number String?
   address      String?   @db.Text
-  image_url    String    @db.Text
+  image_url    String?   @db.Text
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
   Invoice      Invoice[]

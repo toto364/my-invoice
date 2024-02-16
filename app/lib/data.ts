@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+// import { sql } from '@vercel/postgres';
 import {
   CustomerField,
   CustomersTableType,
@@ -6,10 +6,10 @@ import {
   InvoicesTable,
   LatestInvoiceRaw,
   User,
-  Revenue,
+  // Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
-import { customers, invoices, revenue } from './placeholder-data';
+// import { customers, invoices, revenue } from './placeholder-data';
 import { unstable_noStore as noStore } from 'next/cache';
 import prisma from '@/app/lib/prisma';
 
@@ -368,6 +368,18 @@ export async function fetchCustomersPages(query: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch total number of customers.');
+  }
+}
+
+export async function fetchCustomerById(id: string) {
+  noStore();
+
+  try {
+    const data = await prisma.customer.findFirst({ where: { id } });
+    return data;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch customer.');
   }
 }
 
