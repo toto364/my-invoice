@@ -3,17 +3,12 @@
 import Image from 'next/image';
 import ResourceDeleteModal, { useResourceDeleteModal } from '../pages/resource-delete-modal';
 import { useSearchParams } from 'next/navigation';
-
-const SEARCH_PARAM_KEYS = [
-  'customerEmail',
-  'customerImageUrl',
-  'customerName',
-];
+import { SEARCH_PARAM_RESOURCE_MAP } from './resource-renderer';
 
 export default function DeleteModal() {
   const searchParams = useSearchParams();
   const resourceDeleteModalVM = useResourceDeleteModal({
-    resourceSearchParamKeys: SEARCH_PARAM_KEYS,
+    resourceSearchParamKeys: Object.keys(SEARCH_PARAM_RESOURCE_MAP),
   });
 
   return (

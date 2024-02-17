@@ -13,6 +13,12 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import DeleteModal from '@/app/ui/customers/delete-modal';
 import { CustomersTableType } from '@/app/lib/definitions';
 
+export const SEARCH_PARAM_RESOURCE_MAP = {
+  'customerEmail': 'email',
+  'customerImageUrl': 'image_url',
+  'customerName': 'name',
+};
+
 export type DeleteModalSearchParamsType = {
   openDeleteModal?: string;
   customerEmail?: string;
@@ -26,9 +32,11 @@ export default function renderCustomers(
   const createDeleteUrl = (customer: CustomersTableType): string => {
     const params = new URLSearchParams();
     params.set('openDeleteModal', true.toString());
-    params.set('customerEmail', customer.email);
-    params.set('customerName', customer.name);
-    params.set('customerImageUrl', customer.image_url);
+    let key: keyof typeof SEARCH_PARAM_RESOURCE_MAP;
+    for (key in SEARCH_PARAM_RESOURCE_MAP) {
+      let searchParamKey = SEARCH_PARAM_RESOURCE_MAP[key] as keyof CustomersTableType;
+      params.set(key, `${customer[searchParamKey]}`);
+    }
     return `/dashboard/customers?${params.toString()}`;
   };
 
